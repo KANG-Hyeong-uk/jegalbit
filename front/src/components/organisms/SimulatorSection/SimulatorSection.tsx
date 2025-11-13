@@ -68,7 +68,8 @@ const SimulatorSection: React.FC<SimulatorSectionProps> = ({ className }) => {
     setResult(null);
 
     try {
-      const response = await fetch('http://localhost:5001/api/backtest', {
+      // Nginx 프록시를 통한 API 호출
+      const response = await fetch('/api/backtest', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

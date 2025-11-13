@@ -3,22 +3,72 @@
  * 코인 그리드 섹션 - 4개의 코인 카드를 2x2 그리드로 배치
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { CoinCard } from '../../molecules/CoinCard';
 import { HistoricalROIModal } from '../HistoricalROIModal';
 import { MOCK_COINS, HISTORICAL_DATA } from '../../../utils/mockData';
 import { CoinData, HistoricalInvestment } from '../../../types/crypto';
+import { getTicker } from '../../../services/upbit';
 
 interface CoinsSectionProps {
   className?: string;
 }
 
+// 코인 ID를 업비트 마켓 코드로 매핑
+const COIN_MARKET_MAP: { [key: string]: string } = {
+  bitcoin: 'KRW-BTC',
+  ethereum: 'KRW-ETH',
+  ripple: 'KRW-XRP',
+  // luna는 업비트에서 거래 중단되었으므로 제외
+};
+
 const CoinsSection: React.FC<CoinsSectionProps> = ({ className }) => {
+  const [coins, setCoins] = useState<CoinData[]>(MOCK_COINS);
   const [selectedCoin, setSelectedCoin] = useState<CoinData | null>(null);
   const [selectedHistoricalData, setSelectedHistoricalData] = useState<HistoricalInvestment | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // 실시간 가격 업데이트 (역사적 ROI 퍼센트는 유지)
+  const updateCoinPrices = async () => {
+    try {
+      const markets = Object.values(COIN_MARKET_MAP);
+      const tickers = await getTicker(markets);
+
+      setCoins(prevCoins =>
+        prevCoins.map(coin => {
+          const market = COIN_MARKET_MAP[coin.id];
+          if (!market) return coin;
+
+          const ticker = tickers.find(t => t.market === market);
+          if (!ticker) return coin;
+
+          // 가격만 업데이트하고 역사적 ROI 퍼센트는 유지
+          return {
+            ...coin,
+            currentPrice: ticker.trade_price,
+          };
+        })
+      );
+    } catch (err) {
+      console.error('Failed to update coin prices:', err);
+    }
+  };
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    updateCoinPrices();
+  }, []);
+
+  // 10초마다 실시간 업데이트
+  useEffect(() => {
+    const interval = setInterval(() => {
+      updateCoinPrices();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCoinClick = (coin: CoinData) => {
     const historicalData = HISTORICAL_DATA[coin.id];
@@ -49,7 +99,7 @@ const CoinsSection: React.FC<CoinsSectionProps> = ({ className }) => {
         </motion.div>
 
         <CoinsGrid>
-          {MOCK_COINS.map((coin, index) => (
+          {coins.map((coin, index) => (
             <motion.div
               key={coin.id}
               initial={{ opacity: 0, y: 30 }}

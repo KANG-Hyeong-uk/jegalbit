@@ -24,25 +24,40 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ['jegalbit.kro.kr'], // 도메인 허용
+    host: '0.0.0.0',       // 도커 컨테이너 외부 접근 허용
+    port: 5173,            // 기본 포트 명시
+    strictPort: true,      // 포트 충돌 시 자동 변경 방지
+    hmr: {
+      protocol: 'ws',      // WebSocket 프로토콜
+      host: 'jegalbit.kro.kr',  // 도메인으로 HMR 연결
+      clientPort: 80,      // Nginx 포트
+    },
+    // API 프록시 설정 (개발 모드에서 사용)
     proxy: {
-      // 업비트 API 프록시 설정 (CORS 우회)
-      '/api/upbit': {
+      '/api': {
+        target: 'http://127.0.0.1:5001',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/upbit-api': {
         target: 'https://api.upbit.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/upbit/, ''),
         secure: true,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
-        },
+        rewrite: (path) => path.replace(/^\/upbit-api/, ''),
       },
+    },
+    watch: {
+      // 불필요한 파일 감시 제외
+      ignored: [
+        '**/node_modules/**',
+        '**/.git/**',
+        '**/dist/**',
+        '**/build/**',
+        '**/.env*',
+      ],
+      // 파일 감시 간격 조정 (너무 민감하지 않게)
+      usePolling: false,
     },
   },
 })

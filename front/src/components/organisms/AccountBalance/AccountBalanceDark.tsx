@@ -181,7 +181,7 @@ const AccountBalanceDark: React.FC = () => {
               <Divider />
               <ProfitColumn>
                 <ProfitLabel>총 수익률</ProfitLabel>
-                <ProfitValue isProfit={totalProfitRate >= 0}>
+                <ProfitValue $isProfit={totalProfitRate >= 0}>
                   {totalProfitRate >= 0 ? '+' : ''}{totalProfitRate.toFixed(2)}%
                 </ProfitValue>
               </ProfitColumn>
@@ -228,7 +228,7 @@ const AccountBalanceDark: React.FC = () => {
                           </CurrencyBalance>
                         </CurrencyDetails>
                       </CurrencyInfo>
-                      <ProfitBadge isProfit={profitRate >= 0}>
+                      <ProfitBadge $isProfit={profitRate >= 0}>
                         {profitRate >= 0 ? '+' : ''}{profitRate.toFixed(2)}%
                       </ProfitBadge>
                     </CurrencyHeader>
@@ -248,7 +248,7 @@ const AccountBalanceDark: React.FC = () => {
                       </ValueItem>
                       <ValueItem>
                         <ValueLabel>평가 손익</ValueLabel>
-                        <ValueText isProfit={profitLoss >= 0}>
+                        <ValueText $isProfit={profitLoss >= 0}>
                           {profitLoss >= 0 ? '+' : ''}{formatPrice(profitLoss)} KRW
                         </ValueText>
                       </ValueItem>
@@ -430,17 +430,17 @@ const ProfitLabel = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-const ProfitValue = styled.div<{ isProfit: boolean }>`
+const ProfitValue = styled.div<{ $isProfit: boolean }>`
   font-size: 1.5rem;
   font-weight: 700;
   font-family: 'SF Mono', 'Roboto Mono', monospace;
-  color: ${(props) => (props.isProfit ? '#10b981' : '#ef4444')};
+  color: ${(props) => (props.$isProfit ? '#10b981' : '#ef4444')};
   display: flex;
   align-items: center;
   gap: 0.5rem;
 
   &::after {
-    content: '${(props) => (props.isProfit ? '▲' : '▼')}';
+    content: '${(props) => (props.$isProfit ? '▲' : '▼')}';
     font-size: 0.75rem;
     opacity: 0.7;
   }
@@ -531,11 +531,11 @@ const CurrencyBalance = styled.div`
   color: #9ca3af;
 `;
 
-const ProfitBadge = styled.div<{ isProfit: boolean }>`
+const ProfitBadge = styled.div<{ $isProfit: boolean }>`
   padding: 0.375rem 0.75rem;
-  background: ${(props) => (props.isProfit ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)')};
-  color: ${(props) => (props.isProfit ? '#10b981' : '#ef4444')};
-  border: 1px solid ${(props) => (props.isProfit ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)')};
+  background: ${(props) => (props.$isProfit ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)')};
+  color: ${(props) => (props.$isProfit ? '#10b981' : '#ef4444')};
+  border: 1px solid ${(props) => (props.$isProfit ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)')};
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -563,13 +563,13 @@ const ValueLabel = styled.div`
   color: #9ca3af;
 `;
 
-const ValueText = styled.div<{ isProfit?: boolean }>`
+const ValueText = styled.div<{ $isProfit?: boolean }>`
   font-size: 0.875rem;
   font-weight: 600;
   font-family: 'SF Mono', 'Roboto Mono', monospace;
   color: ${(props) =>
-    props.isProfit !== undefined
-      ? props.isProfit
+    props.$isProfit !== undefined
+      ? props.$isProfit
         ? '#10b981'
         : '#ef4444'
       : '#f3f4f6'

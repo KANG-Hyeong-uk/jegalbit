@@ -1,10 +1,12 @@
 /**
  * 업비트 API 클라이언트
+ * Nginx 프록시를 통해 CORS 우회
  */
 
 import axios from 'axios';
 
-const UPBIT_API_BASE_URL = 'https://api.upbit.com/v1';
+// Nginx 프록시 경로 사용 (CORS 우회)
+const UPBIT_API_BASE_URL = '/upbit-api/v1';
 
 export interface UpbitTicker {
   market: string; // 종목 구분 코드

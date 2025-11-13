@@ -6,7 +6,8 @@
 import axios from 'axios';
 import { Trade, CreateTradeDTO, UpdateTradeDTO, TradeFilter, TradeStatistics } from '../../types/trade';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+// Nginx 프록시를 통한 API 호출
+const API_BASE_URL = '/api';
 
 // Axios 인스턴스 생성
 const apiClient = axios.create({

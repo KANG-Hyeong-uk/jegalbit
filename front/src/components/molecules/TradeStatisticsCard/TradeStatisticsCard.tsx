@@ -26,7 +26,7 @@ const TradeStatisticsCard: React.FC<TradeStatisticsCardProps> = ({ statistics })
       transition={{ duration: 0.4 }}
     >
       <MainCard>
-        <MainLabel>평균 총 수익률</MainLabel>
+        <MainLabel>총 수익률</MainLabel>
         <MainValue $isPositive={(statistics.averageTotalReturn || 0) >= 0}>
           {formatPercent(statistics.averageTotalReturn || 0)}
         </MainValue>

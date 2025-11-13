@@ -4,8 +4,6 @@
  */
 
 import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
-import * as jose from 'jose';
 import {
   MinuteCandle,
   DayCandle,
@@ -15,58 +13,13 @@ import {
   CandleChartData,
 } from '../../types/upbit';
 
-const API_BASE_URL = import.meta.env.VITE_UPBIT_API_URL || 'https://api.upbit.com';
-const ACCESS_KEY = import.meta.env.VITE_UPBIT_ACCESS_KEY;
-const SECRET_KEY = import.meta.env.VITE_UPBIT_SECRET_KEY;
-
-// 개발 환경에서는 프록시 사용, 프로덕션에서는 직접 호출
-const USE_PROXY = import.meta.env.DEV;
-const PROXY_BASE_URL = '/api/upbit';
-
-// Public API 클라이언트 (인증 불필요)
+// Public API는 Nginx 프록시를 통해 호출 (CORS 우회)
 const publicClient = axios.create({
-  baseURL: USE_PROXY ? PROXY_BASE_URL : API_BASE_URL,
+  baseURL: '/upbit-api',
   headers: {
     'Accept': 'application/json',
   },
 });
-
-/**
- * JWT 토큰 생성 (Exchange API용)
- */
-const generateJWT = async (payload: Record<string, any>): Promise<string> => {
-  if (!SECRET_KEY) {
-    throw new Error('UPBIT_SECRET_KEY is not configured');
-  }
-
-  const secret = new TextEncoder().encode(SECRET_KEY);
-  const jwt = await new jose.SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
-    .sign(secret);
-
-  return jwt;
-};
-
-/**
- * 인증 헤더 생성
- */
-const getAuthHeaders = async (): Promise<Record<string, string>> => {
-  if (!ACCESS_KEY || !SECRET_KEY) {
-    throw new Error('API 키가 설정되지 않았습니다. .env 파일을 확인해주세요.');
-  }
-
-  const payload = {
-    access_key: ACCESS_KEY,
-    nonce: uuidv4(),
-  };
-
-  const token = await generateJWT(payload);
-
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Accept': 'application/json',
-  };
-};
 
 // ===== Quotation API (Public) =====
 
@@ -142,20 +95,24 @@ export const getTicker = async (markets: string[]): Promise<Ticker[]> => {
 
 /**
  * 계정 잔고 조회
+ * 백엔드 프록시를 통해 안전하게 호출
  */
 export const getAccounts = async (): Promise<Account[]> => {
   try {
-    const headers = await getAuthHeaders();
-    // 개발 환경에서는 프록시를 통해 호출
-    const baseURL = USE_PROXY ? PROXY_BASE_URL : API_BASE_URL;
-    const url = `${baseURL}/v1/accounts`;
+    // 백엔드 프록시를 통해 호출 (보안)
+    const url = '/api/upbit/accounts';
 
-    const response = await axios.get<Account[]>(url, {
-      headers,
-    });
+    console.log('[Upbit API] 요청 URL:', url);
+    console.log('[Upbit API] 백엔드 프록시를 통한 안전한 호출');
 
+    const response = await axios.get<Account[]>(url);
+
+    console.log('[Upbit API] 응답 성공:', response.status);
+    console.log('[Upbit API] 계정 수:', response.data.length);
     return response.data;
   } catch (error: any) {
+    console.error('[Upbit API] 오류 발생:', error.response?.status, error.response?.data);
+    console.error('[Upbit API] 전체 오류:', error);
     throw new Error('계정 정보를 불러오는데 실패했습니다. API 키를 확인해주세요.');
   }
 };

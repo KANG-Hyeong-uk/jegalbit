@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+
+# .env 파일 로드 (가장 먼저 실행!)
+load_dotenv()
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -13,6 +18,7 @@ from crypto_simulator import (
     create_chart_image
 )
 import trade_journal_db as db
+import upbit_proxy
 
 app = FastAPI(title="Crypto Backtest API", version="1.0.0")
 
@@ -170,6 +176,19 @@ async def get_markets():
         {'code': 'KRW-BCH', 'name': '비트코인 캐시 (BCH)'}
     ]
     return {'markets': markets}
+
+# ===== 업비트 API 프록시 =====
+
+@app.get('/api/upbit/accounts')
+async def get_upbit_accounts():
+    """업비트 계정 잔고 조회 (프록시)"""
+    try:
+        accounts = upbit_proxy.call_upbit_api('/v1/accounts')
+        return accounts
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=f'API 키 설정 오류: {str(e)}')
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f'업비트 API 호출 실패: {str(e)}')
 
 # ===== 매매 일지 CRUD API =====
 

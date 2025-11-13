@@ -6,6 +6,8 @@
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
+import { getTicker } from '../../../services/upbit';
+import { Ticker } from '../../../types/upbit';
 
 interface HeroSectionProps {
   bitcoinPrice?: number;
@@ -18,16 +20,34 @@ const HeroSection: React.FC<HeroSectionProps> = ({
   priceChange = 0.01,
   className,
 }) => {
+  const [ticker, setTicker] = useState<Ticker | null>(null);
   const [displayPrice, setDisplayPrice] = useState(bitcoinPrice);
   const [displayChange, setDisplayChange] = useState(priceChange);
 
-  // 실시간 가격 시뮬레이션
+  // 실시간 가격 로드
+  const loadBitcoinPrice = async () => {
+    try {
+      const tickers = await getTicker(['KRW-BTC']);
+      if (tickers.length > 0) {
+        setTicker(tickers[0]);
+        setDisplayPrice(tickers[0].trade_price);
+        setDisplayChange(tickers[0].change_rate * 100);
+      }
+    } catch (err) {
+      console.error('Failed to load bitcoin price:', err);
+    }
+  };
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    loadBitcoinPrice();
+  }, []);
+
+  // 10초마다 실시간 업데이트
   useEffect(() => {
     const interval = setInterval(() => {
-      const change = (Math.random() - 0.5) * 100;
-      setDisplayPrice((prev) => prev + change);
-      setDisplayChange((Math.random() - 0.5) * 2);
-    }, 3000);
+      loadBitcoinPrice();
+    }, 10000);
 
     return () => clearInterval(interval);
   }, []);

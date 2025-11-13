@@ -1,7 +1,7 @@
 /**
  * 전역 스타일 및 Tailwind 설정
  */
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,7 +9,7 @@
 /**
  * Google Fonts - Poppins & Inter
  */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap');
+
 
 /**
  * Premium Dark Theme Design Tokens

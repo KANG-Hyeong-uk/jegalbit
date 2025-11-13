@@ -88,7 +88,7 @@ export const MOCK_COINS: CoinData[] = [
     symbol: 'LUNA',
     currentPrice: 0.03, // KRW (폭락 후 가격)
     priceChange24h: -0.001,
-    priceChangePercentage24h: -99.9999, // 2021년 기준 역사적 수익률 (폭락)
+    priceChangePercentage24h: -100, // 100% 하락
     logo: 'LUNA',
     chartData: generateChartData(0.03, 24),
   },
