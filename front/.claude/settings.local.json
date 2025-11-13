@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "mcp__Framelink_Figma_MCP__get_figma_data",
+      "Bash(cat:*)",
+      "Bash(npm install:*)",
+      "Bash(cd:*)",
+      "Bash(dir:*)",
+      "Bash(del trade_journal.db)",
+      "Bash(python app_fastapi.py:*)"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "Framelink Figma MCP"
+  ]
+}

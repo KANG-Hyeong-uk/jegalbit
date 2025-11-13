@@ -1,0 +1,6 @@
+{
+  "enabledMcpjsonServers": [
+    "Framelink Figma MCP"
+  ],
+  "enableAllProjectMcpServers": true
+}

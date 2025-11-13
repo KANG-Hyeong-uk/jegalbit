@@ -1,0 +1,44 @@
+# Node modules
+node_modules
+npm-debug.log
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 로그
+*.log
+
+# 환경 변수
+.env
+.env.local
+
+# 빌드 결과물
+dist/
+build/
+*.egg-info/
